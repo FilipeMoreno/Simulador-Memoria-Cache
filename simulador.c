@@ -284,7 +284,7 @@ int buscarCache(){
             system("@cls||clear");
             menu();
         } else {
-            if (cache[1].ultimo = true){
+            if (cache[1].ultimo == true){
                 cache[0].dado = memP[end_mem].dado;
                 if (memP[end_mem].endereco % 2 == 0){
                     cache[0].par = memP[end_mem].dado;
@@ -309,7 +309,7 @@ int buscarCache(){
                 system("@cls||clear");
                 menu();
             }
-            else {
+            else if (cache[0].ultimo == true){
                 cache[1].dado = memP[end_mem].dado;
                 if (memP[end_mem].endereco % 2 == 0){
                     cache[1].par = memP[end_mem].dado;
