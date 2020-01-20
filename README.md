@@ -20,11 +20,9 @@ O programa deve ainda utilizar a política de escrita write-back, ou seja, ao ge
 
 # Informações sobre a implementação
 
-Tamanho do bloco (2)
-Numero de linhas da cache (2)
-Mapeamento (Associativo)
-Política de substituição (FIFO e LRU)
-
-<br> <br>
-
+Tamanho do bloco (2)<br>
+Numero de linhas da cache (2)<br>
+Mapeamento (Associativo)<br>
+Política de substituição (FIFO e LRU)<br>
+<br>
 © Filipe Moreno
