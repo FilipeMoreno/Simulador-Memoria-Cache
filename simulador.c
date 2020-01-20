@@ -6,18 +6,19 @@
 #include <time.h>
 #include <stdbool.h>
 
-#define Tam_Mem 1001
+#define Tam_Mem 1000
 
-char alfabeto[26] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'};
-
+// Variáveis do contador HIT e MISS
 int hit = 0, miss = 0;
 
+// Struct da Memoria Principal
 struct memoria_principal
 {
     int dado;
     int endereco;
 };
 
+// Função para limpar scanf
 void limpar(void)
 {
     int c;
@@ -26,12 +27,14 @@ void limpar(void)
     } while (c != '\n' && c != EOF);
 }
 
+// Função para implementar delay
 void delay(int number_of_seconds)
 {
     clock_t start_time = clock();
     while (clock() < start_time + number_of_seconds);
 }
 
+// Struct da Cemoria Cache
 struct cache
 {
     int endereco;
@@ -45,23 +48,29 @@ struct cache
     int end_mem;
 };
 
+// Variaveis das memorias
 struct memoria_principal memP[Tam_Mem];
 struct cache cache[2];
 
+// Função para mostrar a memoria cache
 int mostrarCache(){
 
     printf(" |--------------|\n");
     printf(" |-    Cache   -|\n");
     printf(" |--------------|\n");
+    // Verifica se existe dados na posição 1 da cache
     if (cache[0].dado == 0){
         printf(" |%i - -/- -/-   |\n", cache[0].endereco);
 
+    // Verifica o endereço de memoria para mostrar na cache (PAR e IMPAR)
     } if (cache[0].end_mem % 2 == 0 && cache[0].dado != 0) {
         printf(" |%i - %i %i |\n", cache[0].endereco, cache[0].par, cache[0].impar);
 
     } else if (cache[0].end_mem % 2 != 0 && cache[0].dado != 0){
         printf(" |%i - %i %i |\n", cache[0].endereco, cache[0].par, cache[0].impar);
     }
+
+    // Verifica se existe dados na posição 2 da cache
     if (cache[1].dado == 0){
         printf(" |%i - -/- -/-   |\n", cache[1].endereco);
 
@@ -74,24 +83,31 @@ int mostrarCache(){
     printf(" |--------------|\n\n");
 }
 
+// Função para iniciar a cache
 void iniciarCache(){
 
+    // Define como 0 as informações posição 1 e 2 da cache
     cache[0].dado = 0;
     cache[1].dado = 0;
     cache[0].par = 0;
     cache[1].par = 0;
     cache[0].impar = 0;
     cache[1].impar = 0;
+
+    // Define o endereço das posições da cache
     cache[0].endereco = 1;
     cache[1].endereco = 2;
 
     printf(" Memoria_Cache gerada. \n");
 }
 
+// Função para iniciar a memoria Principal
 void iniciarMemoriaPrincipal(){
 
     int i, x;
     srand(time(NULL));
+
+    // Inicia o arquivo da memoria principal
     FILE *memoriaPrincipal;
     memoriaPrincipal=fopen ("memoriaPrincipal.txt","w+");
     if (!memoriaPrincipal)
@@ -100,6 +116,7 @@ void iniciarMemoriaPrincipal(){
         exit (1);
     }
 
+    // Gera e define numeros aleatorios de 4 dígitos para a memoria principal
     for (i = 0; i < 1300; i++){
         x = rand() % 9000;
         if (x < 1000){
@@ -107,12 +124,14 @@ void iniciarMemoriaPrincipal(){
         }
         memP[i].endereco = i;
         memP[i].dado = x;
+
+        // Coloca os números gerado no arquivo
         fprintf (memoriaPrincipal, "%i - %i \n", memP[i].endereco, memP[i].dado);
     }
     printf(" Memoria_Principal gerada. \n");
-
 }
 
+// Função para o Write-Back
 void salvarMemoriaPrincipal(){
 
     int i;
@@ -132,10 +151,12 @@ void salvarMemoriaPrincipal(){
 
 }
 
+// Função para mostrar os HIT e MISS na tela
 void mostrarHitMiss(){
     printf("\t Hit: %i \t Miss: %i \n", hit, miss);
 }
 
+// Menu para verificar se o usuário deseja realizar outras operações
 void menu()
 {
 	int opcao_menu;
@@ -163,6 +184,7 @@ void menu()
     }
 }
 
+// Menu para verificar a função que o usuário deseja realizar
 void menu2(){
 
     int opcao_menu;
@@ -190,11 +212,12 @@ void menu2(){
     }
 }
 
+// Função para buscar um dado da memoria principal para a cache
 int buscarCache(){
 
     int x, i, end_mem;
     bool par;
-
+    // Mostra a memoria cache junto com os HIT e MISS
     mostrarCache();
     mostrarHitMiss();
 
@@ -208,11 +231,13 @@ int buscarCache(){
     // VERIFICAÇÃO DAS 2 POSIÇÕES DA CACHE VAZIA
     if (cache[0].dado == 0 && cache[1].dado == 0){
         cache[0].dado = memP[end_mem].dado;
+        // VERIFICA SE O ENDEREÇO DIGITADO É PAR
         if (memP[end_mem].endereco % 2 == 0){
             cache[0].par = memP[end_mem].dado;
             cache[0].impar = memP[end_mem + 1].dado;
             cache[0].end_par = memP[end_mem].endereco;
             cache[0].end_impar = memP[end_mem + 1].endereco;
+        // VERIFICA SE O ENDEREÇO DIGITADO É ÍMPAR
         } else if (memP[end_mem].endereco % 2 != 0)  {
             cache[0].par = memP[end_mem -1].dado;
             cache[0].impar = memP[end_mem].dado;
@@ -230,7 +255,9 @@ int buscarCache(){
         system("pause");
         system("@cls||clear");
         menu();
+        // VERIFICA SE EXISTE DADO NA POSIÇÃO 1 E A POSIÇÃO 2 ESTA VAZIA
     } else if (cache[0].dado != 0 && cache[1].dado == 0){
+        // VERIFICA SE O DADO SOLICITADO JÁ EXISTE NA CACHE
         if (cache[0].end_par == memP[end_mem].endereco || cache[0].end_impar == memP[end_mem].endereco) {
             printf("\n Dado ja existente na Memoria Cache!\n Hit!\n\n");
             hit++;
@@ -241,11 +268,13 @@ int buscarCache(){
             menu();
         }
         cache[1].dado = memP[end_mem].dado;
+        // VERIFICA SE O ENDEREÇO DIGITADO É PAR
         if (memP[end_mem].endereco % 2 == 0){
             cache[1].par = memP[end_mem].dado;
             cache[1].impar = memP[end_mem + 1].dado;
             cache[1].end_par = memP[end_mem].endereco;
             cache[1].end_impar = memP[end_mem + 1].endereco;
+        // VERIFICA SE O ENDEREÇO DIGITADO É ÍMPAR
         } else if (memP[end_mem].endereco % 2 != 0)  {
             cache[1].par = memP[end_mem - 1].dado;
             cache[1].impar = memP[end_mem].dado;
@@ -263,7 +292,9 @@ int buscarCache(){
         system("pause");
         system("@cls||clear");
         menu();
+    // VERIFICA SE AS 2 POSIÇÕES ESTÃO CHEIAS
     } else if (cache[0].dado != 0 && cache[1].dado != 0) {
+        // VERIFICA SE O DADO SOLICITADO JÁ EXISTE NA CACHE
         if (cache[0].end_par == memP[end_mem].endereco || cache[0].end_impar == memP[end_mem].endereco)
         {
             printf("\n Dado ja existente na Memoria Cache!\n Hit!\n\n");
@@ -274,6 +305,7 @@ int buscarCache(){
             system("@cls||clear");
             menu();
         }
+        // VERIFICA SE O DADO SOLICITADO JÁ EXISTE NA CACHE
         else if (cache[1].end_par == memP[end_mem].endereco || cache[1].end_impar == memP[end_mem].endereco)
         {
             printf("\n Dado ja existente na Memoria Cache!\n Hit!\n\n");
@@ -284,6 +316,7 @@ int buscarCache(){
             system("@cls||clear");
             menu();
         } else {
+            // VERIFICA SE FOI O ULTIMO (FIFO)
             if (cache[1].ultimo == true){
                 cache[0].dado = memP[end_mem].dado;
                 if (memP[end_mem].endereco % 2 == 0){
@@ -309,13 +342,16 @@ int buscarCache(){
                 system("@cls||clear");
                 menu();
             }
+            // VERIFICA SE FOI O ULTIMO (FIFO)
             else if (cache[0].ultimo == true){
                 cache[1].dado = memP[end_mem].dado;
+                // VERIFICA SE O ENDEREÇO DIGITADO É PAR
                 if (memP[end_mem].endereco % 2 == 0){
                     cache[1].par = memP[end_mem].dado;
                     cache[1].impar = memP[end_mem + 1].dado;
                     cache[1].end_par = memP[end_mem].endereco;
                     cache[1].end_impar = memP[end_mem + 1].endereco;
+                // VERIFICA SE O ENDEREÇO DIGITADO É IMPAR
                 } else if (memP[end_mem].endereco % 2 != 0)  {
                     cache[1].par = memP[end_mem - 1].dado;
                     cache[1].impar = memP[end_mem].dado;
@@ -338,6 +374,7 @@ int buscarCache(){
     }
 }
 
+// FUNÇÃO PARA EDITAR O DADO NA CACHE
 int editarCache(){
 
     int endereco_memoria, new_dado, bloco, x;
@@ -348,11 +385,13 @@ int editarCache(){
     scanf("%i", &endereco_memoria);
     endereco_memoria -= 1;
 
+    // VERIFICA SE A CACHE ESTÁ VAZIA
     if (cache[endereco_memoria].dado == 0) {
         printf("\n Voce deve buscar um valor primeiro... \n");
         menu2();
     }
 
+    // VERIFICA SE O ENDEREÇO DIGITADO PELO USUÁRIO É VALIDO
     if (endereco_memoria > 1 || endereco_memoria < 0 ){
         printf("\n Endereco invalido... \n");
         editarCache();
@@ -385,20 +424,30 @@ int editarCache(){
 
 }
 
+// FUNÇÃO PRINCIPAL
 main(){
 
-    int i, end_mem;
+    int i, end_mem, opcao;
 
-    iniciarCache();
-    iniciarMemoriaPrincipal();
-    delay(500);
     printf("\n ================================================================== \n");
+    printf(" Simulador de Memoria Cache \n");
     printf(" Trabalho de Arquitetura e Organizacao de Computadores \n");
     printf(" Informatica - UEM \n");
+    printf(" Alunos: \n");
+    printf(" Filipe Moreno - RA: 111839 \n");
+    printf(" Raul Victor - RA: 111874 \n");
     printf(" ================================================================== \n");
     printf("\n");
     system("pause");
     system("@cls || clear");
+    iniciarCache();
+    iniciarMemoriaPrincipal();
+    delay(500);
+    printf("\n Para comecar, escolha uma opcao: \n");
+    printf(" 1 - FIFO \n");
+    printf(" 2 - LRU \n");
+    printf(" -> ");
+    scanf("%i", &opcao);
     menu2();
 
 }
